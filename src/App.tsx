@@ -117,7 +117,7 @@ function VoteContainer({ votes, title, backgroundStyle }: VoteContainerProps) {
 
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
-    "/data/vote.csv?v=2",
+    "/data/vote.csv?v=3",
     csvFetcher
   );
 
