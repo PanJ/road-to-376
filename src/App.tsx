@@ -98,7 +98,7 @@ type VoteContainerProps = {
 function VoteContainer({ votes, title, backgroundStyle }: VoteContainerProps) {
   return (
     <div
-      className="flex gap-2 flex-col flex-wrap w-[33%] p-2 content-start"
+      className="flex gap-2 flex-col flex-wrap md:w-[33%] w-full p-2 content-start"
       style={{
         background: backgroundStyle,
       }}
@@ -162,15 +162,15 @@ function App() {
 
   return (
     <>
-      <h1 className="font-black text-[4.2rem] leading-none mt-8">
+      <h1 className="font-black md:text-[4.2rem] leading-none mt-8 text-[2rem]">
         เช็คคะแนนเสียงสมาชิกรัฐสภา
       </h1>
-      <h1 className="font-black text-[5rem] leading-none">
+      <h1 className="font-black md:text-[5rem] leading-none text-[2rem]">
         ส่งพิธาเป็นนายกรัฐมนตรี
       </h1>
-      <div className="p-4 sizing-box flex flex-row mt-16">
+      <div className="p-4 sizing-box flex flex-row md:mt-16 mt-4">
         <div
-          className="h-[50px] bg-[#165902] flex items-center pl-4 font-black text-xl"
+          className="h-[50px] bg-[#165902] flex items-center md:pl-4 pl-2 font-black md:text-xl text-md text-left"
           style={{ width: `${(100 * yesVoteCount) / totalVoteCount}%` }}
         >
           {yesVoteCount}{" "}
@@ -179,19 +179,19 @@ function App() {
             : "(เกินเป้า 376!)"}
         </div>
         <div
-          className="h-[50px] bg-[#827762] flex items-center pl-4 font-black text-xl"
+          className="h-[50px] bg-[#827762] flex items-center md:pl-4 pl-2 font-black md:text-xl text-md text-left"
           style={{ width: `${(100 * maybeVoteCount) / totalVoteCount}%` }}
         >
           {maybeVoteCount}
         </div>
         <div
-          className="h-[50px] bg-[#8e0d04] flex items-center pl-4 font-black text-xl"
+          className="h-[50px] bg-[#8e0d04] flex items-center md:pl-4 pl-2 font-black md:text-xl text-md text-left"
           style={{ width: `${(100 * noVoteCount) / totalVoteCount}%` }}
         >
           {noVoteCount}
         </div>
       </div>
-      <div className="mt-8 flex flex-row">
+      <div className="md:mt-8 md-4 flex md:flex-row flex-col">
         <VoteContainer
           title="โหวตเห็นด้วย"
           votes={processedVoteData["2"]}
