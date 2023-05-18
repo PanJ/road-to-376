@@ -230,6 +230,16 @@ function App() {
           Submit on GitHub
         </a>
       </p>
+      <p className="mb-8 text-sm">
+        Thanks for the images from{" "}
+        <a href="https://wevis.info/" target="_blank">
+          WeVis
+        </a>{" "}
+        and{" "}
+        <a href="https://election2566.thestandard.co/" target="_blank">
+          THE STANDARD
+        </a>
+      </p>
       <Tooltip id="vote-tooltip" />
     </>
   );
