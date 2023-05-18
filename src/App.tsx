@@ -226,7 +226,7 @@ function App() {
       </p>
       <p className="mb-8">
         Got an updated data?{" "}
-        <a href="" target="_blank">
+        <a href="https://github.com/PanJ/road-to-376" target="_blank">
           Submit on GitHub
         </a>
       </p>
