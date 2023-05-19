@@ -3,7 +3,7 @@ import { Tooltip } from "react-tooltip";
 import Modal from "react-modal";
 import useSWR from "swr";
 import "./App.css";
-import { VoteContainer } from "./components/VoteContainers";
+import { VoteContainer } from "./components/VoteContainer";
 import { Vote, MemberType, VoteType } from "./types";
 import { FilterOption } from "./components/FilterOption";
 
