@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import useSWR from "swr";
 import "./App.css";
@@ -57,6 +57,7 @@ const csvFetcher = (url: string) =>
 type VoteProps = {
   vote: Vote;
 };
+
 function VoteItem({ vote }: VoteProps) {
   let text = `<p>${vote.name}</p>`;
   if (vote.memberType == MemberType.Senate) {
@@ -82,8 +83,9 @@ function VoteItem({ vote }: VoteProps) {
         }}
       >
         <img
-          className="w-[100%] aspect-square object-contain rounded-full object-top"
+          className="w-[100%] aspect-square object-contain rounded-full object-top border border-white"
           src={`/images/${vote.id}.png`}
+          alt={`${vote.name} (${vote.partyName})`}
         />
       </div>
     </a>
@@ -94,8 +96,14 @@ type VoteContainerProps = {
   votes: Vote[];
   title: string;
   backgroundStyle: string;
+  showOptions: "all" | MemberType.Senate | MemberType.Rep;
 };
-function VoteContainer({ votes, title, backgroundStyle }: VoteContainerProps) {
+function VoteContainer({
+  votes,
+  title,
+  backgroundStyle,
+  showOptions = "all",
+}: VoteContainerProps) {
   return (
     <div
       className="flex gap-2 flex-col flex-wrap md:w-[33%] w-full p-2 content-start"
@@ -107,9 +115,11 @@ function VoteContainer({ votes, title, backgroundStyle }: VoteContainerProps) {
         <h3 className="font-black">{title}</h3>
       </div>
       <div className="grid grid-cols-6 gap-2">
-        {votes.map((v) => (
-          <VoteItem vote={v} />
-        ))}
+        {votes
+          .filter((v) => v.memberType === showOptions || showOptions === "all")
+          .map((v) => (
+            <VoteItem vote={v} key={v.id} />
+          ))}
       </div>
     </div>
   );
@@ -120,6 +130,14 @@ function App() {
     "/data/vote.csv?v=3",
     csvFetcher
   );
+
+  const [showOption, setShowOption] = useState<
+    "all" | MemberType.Senate | MemberType.Rep
+  >("all");
+
+  const onShowOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShowOption(e.target.value as "all" | MemberType.Senate | MemberType.Rep);
+  };
 
   const processedVoteData = useMemo<{
     [v in VoteType]: Vote[];
@@ -151,7 +169,7 @@ function App() {
 
   if (isVoteLoading) return null;
 
-  console.log(processedVoteData);
+  // console.log(processedVoteData);
 
   const yesVoteCount =
     processedVoteData["2"].length + processedVoteData["1"].length;
@@ -168,7 +186,7 @@ function App() {
       <h1 className="font-black md:text-[5rem] leading-none text-[2rem]">
         ส่งพิธาเป็นนายกรัฐมนตรี
       </h1>
-      <div className="p-4 sizing-box flex flex-row md:mt-16 mt-4">
+      <div className="flex flex-row p-4 mt-4 sizing-box md:mt-16">
         <div
           className="h-[50px] bg-[#165902] flex items-center md:pl-4 pl-2 font-black md:text-xl text-md text-left"
           style={{ width: `${(100 * yesVoteCount) / totalVoteCount}%` }}
@@ -191,11 +209,65 @@ function App() {
           {noVoteCount}
         </div>
       </div>
-      <div className="md:mt-8 md-4 flex md:flex-row flex-col">
+
+      <div className="flex flex-row gap-2 md:mt-8 md-4">
+        {/* show options */}
+        <input
+          type="radio"
+          name="show"
+          id="all"
+          className="hidden"
+          value="all"
+          onChange={onShowOptionChange}
+        />
+        <label
+          htmlFor="all"
+          className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
+            showOption === "all" ? "bg-gray-900" : ""
+          }`}
+        >
+          ทั้งหมด
+        </label>
+        <input
+          type="radio"
+          name="show"
+          id="senate"
+          className="hidden"
+          value={MemberType.Senate}
+          onChange={onShowOptionChange}
+        />
+        <label
+          htmlFor="senate"
+          className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
+            showOption === MemberType.Senate ? "bg-gray-900" : ""
+          }`}
+        >
+          แสดงเฉพาะ ส.ว.
+        </label>
+        <input
+          type="radio"
+          name="show"
+          id="rep"
+          className="hidden"
+          value={MemberType.Rep}
+          onChange={onShowOptionChange}
+        />
+        <label
+          htmlFor="rep"
+          className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
+            showOption === MemberType.Rep ? "bg-gray-900" : ""
+          }`}
+        >
+          แสดงเฉพาะ ส.ส.
+        </label>
+      </div>
+
+      <div className="flex flex-col md:mt-8 md-4 md:flex-row">
         <VoteContainer
           title="โหวตเห็นด้วย"
           votes={processedVoteData["2"]}
           backgroundStyle="linear-gradient(39deg, rgba(6,36,0,1) 0%, rgba(72,119,67,1) 35%, rgba(0,255,87,1) 100%)"
+          showOptions={showOption}
         />
         {/* <VoteContainer
           title="มีแนวโน้มโหวตเห็นด้วย"
@@ -206,6 +278,7 @@ function App() {
           title="ยังไม่ทราบ / ไม่ชัดเจน"
           votes={processedVoteData["0"]}
           backgroundStyle="linear-gradient(39deg, rgba(46,61,46,1) 0%, rgba(83,79,79,1) 49%, rgba(64,49,49,1) 100%)"
+          showOptions={showOption}
         />
         {/* <VoteContainer
           title="มีแนวโน้มไม่โหวตเห็นด้วย"
@@ -216,27 +289,36 @@ function App() {
           title="ไม่โหวตเห็นด้วย"
           votes={processedVoteData["-2"]}
           backgroundStyle="linear-gradient(39deg, rgba(71,62,59,1) 0%, rgba(201,59,45,1) 30%, rgba(189,86,15,1) 100%)"
+          showOptions={showOption}
         />
       </div>
-      <p className="font-black mt-4">
+      <p className="mt-4 font-black">
         by{" "}
-        <a href="https://twitter.com/PanJ" target="_blank">
+        <a rel="noopener" href="https://twitter.com/PanJ" target="_blank">
           PanJ
         </a>
       </p>
       <p className="mb-8">
         Got an updated data?{" "}
-        <a href="https://github.com/PanJ/road-to-376" target="_blank">
+        <a
+          rel="noopener"
+          href="https://github.com/PanJ/road-to-376"
+          target="_blank"
+        >
           Submit on GitHub
         </a>
       </p>
       <p className="mb-8 text-sm">
         Thanks for the images from{" "}
-        <a href="https://wevis.info/" target="_blank">
+        <a rel="noopener" href="https://wevis.info/" target="_blank">
           WeVis
         </a>{" "}
         and{" "}
-        <a href="https://election2566.thestandard.co/" target="_blank">
+        <a
+          rel="noopener"
+          href="https://election2566.thestandard.co/"
+          target="_blank"
+        >
           THE STANDARD
         </a>
       </p>
