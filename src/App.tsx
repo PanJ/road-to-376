@@ -117,7 +117,7 @@ function VoteContainer({
 }: VoteContainerProps) {
   return (
     <div
-      className="flex flex-col flex-wrap content-start gap-2 p-2 vote-container"
+      className="flex flex-col flex-wrap content-start gap-2 p-2 w-[33.33%] max-md:w-full vote-container"
       style={{
         background: backgroundStyle,
         // width: `calc(100%*${desktopColumns}/18)`,
@@ -255,7 +255,7 @@ function App() {
         </div>
       </div>
 
-      <div className="flex flex-row gap-2 md:mt-8 md-4">
+      <div className="flex flex-row gap-2 my-4 md-4">
         {/* show options */}
         <input
           type="radio"
@@ -268,7 +268,7 @@ function App() {
         <label
           htmlFor="all"
           className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
-            showOption === "all" ? "bg-gray-900" : ""
+            showOption === "all" ? "bg-gray-300 text-black" : ""
           }`}
         >
           ทั้งหมด
@@ -284,10 +284,10 @@ function App() {
         <label
           htmlFor="senate"
           className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
-            showOption === MemberType.Senate ? "bg-gray-900" : ""
+            showOption === MemberType.Senate ? "bg-gray-300 text-black" : ""
           }`}
         >
-          แสดงเฉพาะ ส.ว.
+          <span className="max-md:hidden">แสดงเฉพาะ </span>ส.ว.
         </label>
         <input
           type="radio"
@@ -300,14 +300,14 @@ function App() {
         <label
           htmlFor="rep"
           className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
-            showOption === MemberType.Rep ? "bg-gray-900" : ""
+            showOption === MemberType.Rep ? "bg-gray-300 text-black" : ""
           }`}
         >
-          แสดงเฉพาะ ส.ส.
+          <span className="max-md:hidden">แสดงเฉพาะ </span>ส.ส.
         </label>
       </div>
 
-      <div className="flex flex-col md:mt-8 md-4 md:flex-row">
+      <div className="flex flex-col md-4 md:flex-row">
         <VoteContainer
           title="โหวตเห็นด้วย"
           votes={processedVoteData["2"]}
