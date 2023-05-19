@@ -97,24 +97,32 @@ type VoteContainerProps = {
   title: string;
   backgroundStyle: string;
   showOptions: "all" | MemberType.Senate | MemberType.Rep;
+  desktopColumns: number;
 };
 function VoteContainer({
   votes,
   title,
   backgroundStyle,
   showOptions = "all",
+  desktopColumns,
 }: VoteContainerProps) {
   return (
     <div
-      className="flex gap-2 flex-col flex-wrap md:w-[33%] w-full p-2 content-start"
+      className="flex flex-col flex-wrap content-start gap-2 p-2 vote-container"
       style={{
         background: backgroundStyle,
+        width: `calc(100%*${desktopColumns}/18)`,
       }}
     >
       <div className="w-full rounded-md py-4 bg-[rgba(0,0,0,0.5)] text-center">
         <h3 className="font-black">{title}</h3>
       </div>
-      <div className="grid grid-cols-6 gap-2">
+      <div
+        className="grid grid-cols-6 gap-2"
+        style={{
+          gridTemplateColumns: `repeat(${desktopColumns}, minmax(0, 1fr))`,
+        }}
+      >
         {votes
           .filter((v) => v.memberType === showOptions || showOptions === "all")
           .map((v) => (
@@ -127,7 +135,7 @@ function VoteContainer({
 
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
-    "/data/vote.csv?v=3",
+    "/data/vote.csv?v=4",
     csvFetcher
   );
 
@@ -186,7 +194,7 @@ function App() {
       <h1 className="font-black md:text-[5rem] leading-none text-[2rem]">
         ส่งพิธาเป็นนายกรัฐมนตรี
       </h1>
-      <div className="flex flex-row p-4 mt-4 sizing-box md:mt-16">
+      <div className="flex flex-row p-0 mt-4 sizing-box md:mt-16">
         <div
           className="h-[50px] bg-[#165902] flex items-center md:pl-4 pl-2 font-black md:text-xl text-md text-left"
           style={{ width: `${(100 * yesVoteCount) / totalVoteCount}%` }}
@@ -268,6 +276,7 @@ function App() {
           votes={processedVoteData["2"]}
           backgroundStyle="linear-gradient(39deg, rgba(6,36,0,1) 0%, rgba(72,119,67,1) 35%, rgba(0,255,87,1) 100%)"
           showOptions={showOption}
+          desktopColumns={7}
         />
         {/* <VoteContainer
           title="มีแนวโน้มโหวตเห็นด้วย"
@@ -279,6 +288,7 @@ function App() {
           votes={processedVoteData["0"]}
           backgroundStyle="linear-gradient(39deg, rgba(46,61,46,1) 0%, rgba(83,79,79,1) 49%, rgba(64,49,49,1) 100%)"
           showOptions={showOption}
+          desktopColumns={7}
         />
         {/* <VoteContainer
           title="มีแนวโน้มไม่โหวตเห็นด้วย"
@@ -288,8 +298,9 @@ function App() {
         <VoteContainer
           title="ไม่โหวตเห็นด้วย"
           votes={processedVoteData["-2"]}
-          backgroundStyle="linear-gradient(39deg, rgba(71,62,59,1) 0%, rgba(201,59,45,1) 30%, rgba(189,86,15,1) 100%)"
           showOptions={showOption}
+          backgroundStyle="linear-gradient(39deg, rgb(71, 62, 59) 0%, rgb(201, 59, 45) 30%, rgb(157 45 10) 100%)"
+          desktopColumns={4}
         />
       </div>
       <p className="mt-4 font-black">
