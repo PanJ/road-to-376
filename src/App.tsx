@@ -98,7 +98,7 @@ type VoteContainerProps = {
 function VoteContainer({ votes, title, backgroundStyle }: VoteContainerProps) {
   return (
     <div
-      className="flex gap-2 flex-col flex-wrap md:w-[33%] w-full p-2 content-start"
+      className="flex gap-2 flex-col flex-wrap md:w-[33.333%] w-full p-2 content-start"
       style={{
         background: backgroundStyle,
       }}
@@ -168,7 +168,7 @@ function App() {
       <h1 className="font-black md:text-[5rem] leading-none text-[2rem]">
         ส่งพิธาเป็นนายกรัฐมนตรี
       </h1>
-      <div className="p-4 sizing-box flex flex-row md:mt-16 mt-4">
+      <div className="p-0 sizing-box flex flex-row md:mt-16 mt-4">
         <div
           className="h-[50px] bg-[#165902] flex items-center md:pl-4 pl-2 font-black md:text-xl text-md text-left"
           style={{ width: `${(100 * yesVoteCount) / totalVoteCount}%` }}
@@ -191,11 +191,11 @@ function App() {
           {noVoteCount}
         </div>
       </div>
-      <div className="md:mt-8 md-4 flex md:flex-row flex-col">
+      <div className="mt-8 md-4 flex md:flex-row flex-col">
         <VoteContainer
           title="โหวตเห็นด้วย"
           votes={processedVoteData["2"]}
-          backgroundStyle="linear-gradient(39deg, rgba(6,36,0,1) 0%, rgba(72,119,67,1) 35%, rgba(0,255,87,1) 100%)"
+          backgroundStyle="linear-gradient(39deg, rgb(6, 36, 0) 0%, rgb(72, 119, 67) 35%, rgb(49 173 17) 100%)"
         />
         {/* <VoteContainer
           title="มีแนวโน้มโหวตเห็นด้วย"
@@ -215,7 +215,7 @@ function App() {
         <VoteContainer
           title="ไม่โหวตเห็นด้วย"
           votes={processedVoteData["-2"]}
-          backgroundStyle="linear-gradient(39deg, rgba(71,62,59,1) 0%, rgba(201,59,45,1) 30%, rgba(189,86,15,1) 100%)"
+          backgroundStyle="linear-gradient(39deg, rgb(71, 62, 59) 0%, rgb(201, 59, 45) 30%, rgb(157 45 10) 100%)"
         />
       </div>
       <p className="font-black mt-4">
