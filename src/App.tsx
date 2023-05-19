@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import Modal from "react-modal";
 import useSWR from "swr";
@@ -57,9 +57,14 @@ const csvFetcher = (url: string) =>
 
 type VoteProps = {
   vote: Vote;
+  onClickVote: (v: Vote) => void;
+  isActive: boolean;
 };
 
-function VoteItem({ vote }: VoteProps) {
+function VoteItem({ vote, onClickVote, isActive }: VoteProps) {
+  const onClick = useCallback(() => {
+    onClickVote(vote);
+  }, [onClickVote, vote]);
   let text = `<p>${vote.name}</p>`;
   if (vote.memberType == MemberType.Senate) {
     text += `<p>สมาชิกวุฒิสภา</p>`;
@@ -70,10 +75,9 @@ function VoteItem({ vote }: VoteProps) {
     text += `<p>${vote.partyName}</p>`;
   }
   return (
-    <a
-      href={vote.reference}
-      target="_blank"
-      className=""
+    <div
+      onClick={onClick}
+      className={`vote-item cursor-pointer ${isActive ? "active" : ""}`}
       data-tooltip-id="vote-tooltip"
       data-tooltip-html={text}
     >
@@ -89,7 +93,7 @@ function VoteItem({ vote }: VoteProps) {
           alt={`${vote.name} (${vote.partyName})`}
         />
       </div>
-    </a>
+    </div>
   );
 }
 
@@ -99,6 +103,8 @@ type VoteContainerProps = {
   backgroundStyle: string;
   showOptions: "all" | MemberType.Senate | MemberType.Rep;
   desktopColumns: number;
+  onClickVote: (v: Vote) => void;
+  activeId: string;
 };
 function VoteContainer({
   votes,
@@ -106,6 +112,8 @@ function VoteContainer({
   backgroundStyle,
   showOptions = "all",
   desktopColumns,
+  onClickVote,
+  activeId,
 }: VoteContainerProps) {
   return (
     <div
@@ -127,7 +135,12 @@ function VoteContainer({
         {votes
           .filter((v) => v.memberType === showOptions || showOptions === "all")
           .map((v) => (
-            <VoteItem vote={v} key={v.id} />
+            <VoteItem
+              key={v.id}
+              vote={v}
+              onClickVote={onClickVote}
+              isActive={activeId === v.id}
+            />
           ))}
       </div>
     </div>
@@ -136,7 +149,7 @@ function VoteContainer({
 
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
-    "/data/vote.csv?v=4",
+    "/data/vote.csv?v=5",
     csvFetcher
   );
 
@@ -176,7 +189,29 @@ function App() {
     [voteData]
   );
 
+  const [activeId, setActiveId] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [currentVote, setCurrentVote] = useState<Vote | undefined>();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(
+        Math.random() * processedVoteData["2"].length
+      );
+      const randomId = processedVoteData["2"][randomIndex].id;
+      setActiveId(randomId);
+    }, 300);
+    return () => clearInterval(interval);
+  }, [processedVoteData]);
+
+  const onClickVote = useCallback((v: Vote) => {
+    setCurrentVote(v);
+    setModalOpen(true);
+  }, []);
+  const onClose = useCallback(() => {
+    setCurrentVote(undefined);
+    setModalOpen(false);
+  }, []);
 
   // console.log(processedVoteData);
   if (isVoteLoading) return null;
@@ -279,6 +314,8 @@ function App() {
           backgroundStyle="linear-gradient(39deg, rgb(6, 36, 0) 0%, rgb(72, 119, 67) 35%, rgb(49 173 17) 100%)"
           showOptions={showOption}
           desktopColumns={6}
+          onClickVote={onClickVote}
+          activeId={activeId}
         />
         {/* <VoteContainer
           title="มีแนวโน้มโหวตเห็นด้วย"
@@ -291,6 +328,8 @@ function App() {
           backgroundStyle="linear-gradient(39deg, rgba(46,61,46,1) 0%, rgba(83,79,79,1) 49%, rgba(64,49,49,1) 100%)"
           showOptions={showOption}
           desktopColumns={6}
+          onClickVote={onClickVote}
+          activeId={activeId}
         />
         {/* <VoteContainer
           title="มีแนวโน้มไม่โหวตเห็นด้วย"
@@ -303,6 +342,8 @@ function App() {
           showOptions={showOption}
           backgroundStyle="linear-gradient(39deg, rgb(71, 62, 59) 0%, rgb(201, 59, 45) 30%, rgb(157 45 10) 100%)"
           desktopColumns={6}
+          onClickVote={onClickVote}
+          activeId={activeId}
         />
       </div>
       <p className="mt-4 font-black">
@@ -337,6 +378,17 @@ function App() {
       </p>
       <Tooltip id="vote-tooltip" />
       <Modal
+        style={{
+          overlay: { backgroundColor: "rgba(0,0,0,0.5)" },
+          content: {
+            border: "0",
+            padding: "0",
+            backgroundColor: currentVote?.color || "#777",
+            maxWidth: "400px",
+            margin: "auto",
+            borderRadius: "20px",
+          },
+        }}
         isOpen={modalOpen}
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         onAfterOpen={() => {}}
@@ -345,17 +397,43 @@ function App() {
           setModalOpen(false);
         }}
         shouldCloseOnOverlayClick
-        style={{}}
         contentLabel="Example Modal"
       >
-        <div>I am a modal</div>
-        <form>
-          <input />
-          <button>tab navigation</button>
-          <button>stays</button>
-          <button>inside</button>
-          <button>the modal</button>
-        </form>
+        <div className="flex flex-col w-full items-center min-h-full">
+          <div className="mt-8">
+            <img src={`/images/${currentVote?.id}.png`} />
+          </div>
+          <div className="p-4 w-full text-center bg-[rgba(0,0,0,0.5)] grow flex flex-col">
+            <p className="font-black my-4 text-[2rem]">{currentVote?.name}</p>
+            <p className="font-regular text-[1.2rem]">
+              {currentVote?.memberType === MemberType.Senate && "สมาชิกวุฒิสภา"}
+              {currentVote?.memberType === MemberType.Rep &&
+                "ว่าที่สมาชิกผู้แทนราษฎร"}
+            </p>
+            {(currentVote?.partyName?.length ?? 0) > 0 && (
+              <p className="font-regular text-[1.2rem]">
+                พรรค{currentVote?.partyName}
+              </p>
+            )}
+            <div className="grow"></div>
+            {currentVote?.reference !== "" && (
+              <a
+                href={currentVote?.reference}
+                target="_blank"
+                className="w-full block border border-solid  border-white p-2 my-4 rounded-lg"
+              >
+                เปิดแหล่งข้อมูลอ้างอิง
+              </a>
+            )}
+
+            <a
+              onClick={onClose}
+              className="cursor-pointer w-full block border border-solid  border-white p-2 rounded-lg"
+            >
+              ปิด
+            </a>
+          </div>
+        </div>
       </Modal>
     </>
   );
