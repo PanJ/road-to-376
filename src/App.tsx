@@ -10,29 +10,8 @@ import { Tooltip } from "react-tooltip";
 import Modal from "react-modal";
 import useSWR from "swr";
 import "./App.css";
-
-enum MemberType {
-  Senate = "SV",
-  Rep = "SS",
-}
-
-enum VoteType {
-  No = -2,
-  LikelyNo = -1,
-  Unknown = 0,
-  LikelyYes = 1,
-  Yes = 2,
-}
-
-type Vote = {
-  id: string;
-  name: string;
-  memberType: MemberType;
-  partyName?: string;
-  color?: string;
-  voteType: VoteType;
-  reference: string;
-};
+import { VoteContainer } from "./components/VoteContainers";
+import { Vote, MemberType, VoteType } from "./types";
 
 const csvFetcher = (url: string) =>
   fetch(url)
@@ -62,98 +41,6 @@ const csvFetcher = (url: string) =>
           ).data
     );
 
-type VoteProps = {
-  vote: Vote;
-  onClickVote: (v: Vote) => void;
-  isActive: boolean;
-};
-
-function VoteItem({ vote, onClickVote, isActive }: VoteProps) {
-  const onClick = useCallback(() => {
-    onClickVote(vote);
-  }, [onClickVote, vote]);
-  let text = `<p>${vote.name}</p>`;
-  if (vote.memberType == MemberType.Senate) {
-    text += `<p>สมาชิกวุฒิสภา</p>`;
-  } else {
-    text += `<p>ว่าที่สมาชิกผู้แทนราษฎร</p>`;
-  }
-  if (vote.partyName) {
-    text += `<p>${vote.partyName}</p>`;
-  }
-  return (
-    <div
-      onClick={onClick}
-      className={`vote-item cursor-pointer ${isActive ? "active" : ""}`}
-      data-tooltip-id="vote-tooltip"
-      data-tooltip-html={text}
-    >
-      <div
-        className="rounded-full"
-        style={{
-          backgroundColor: vote.color,
-        }}
-      >
-        <img
-          className="w-[100%] aspect-square object-contain rounded-full object-top border border-white"
-          src={`/images/${vote.id}.png`}
-          alt={`${vote.name} (${vote.partyName})`}
-        />
-      </div>
-    </div>
-  );
-}
-
-type VoteContainerProps = {
-  votes: Vote[];
-  title: string;
-  backgroundStyle: string;
-  showOptions: "all" | MemberType.Senate | MemberType.Rep;
-  desktopColumns: number;
-  onClickVote: (v: Vote) => void;
-  activeId: string;
-};
-function VoteContainer({
-  votes,
-  title,
-  backgroundStyle,
-  showOptions = "all",
-  desktopColumns,
-  onClickVote,
-  activeId,
-}: VoteContainerProps) {
-  return (
-    <div
-      className="flex flex-col flex-wrap content-start gap-2 p-2 w-[33.33%] max-md:w-full vote-container"
-      style={{
-        background: backgroundStyle,
-        // width: `calc(100%*${desktopColumns}/18)`,
-      }}
-    >
-      <div className="w-full rounded-md py-4 bg-[rgba(0,0,0,0.5)] text-center">
-        <h3 className="font-black">{title}</h3>
-      </div>
-      <div
-        className="grid grid-cols-6 gap-2"
-        style={{
-          gridTemplateColumns: `repeat(${desktopColumns}, minmax(0, 1fr))`,
-        }}
-      >
-        {votes
-          .filter((v) => v.memberType === showOptions || showOptions === "all")
-          .map((v) => (
-            <VoteItem
-              key={v.id}
-              vote={v}
-              onClickVote={onClickVote}
-              isActive={activeId === v.id}
-            />
-          ))}
-      </div>
-    </div>
-  );
-}
-
 type FilterOptionProps = {
   isActive: boolean;
   value: string;
@@ -181,7 +68,7 @@ function FilterOption({
       {isActive ? (
         <label
           htmlFor={value}
-          className="px-4 py-2 bg-gray-300 rounded-full hover:cursor-pointer text-black"
+          className="px-4 py-2 text-black bg-gray-300 rounded-full hover:cursor-pointer"
         >
           {children}
         </label>
@@ -428,9 +315,12 @@ function App() {
         shouldCloseOnOverlayClick
         contentLabel="Example Modal"
       >
-        <div className="flex flex-col w-full items-center min-h-full">
+        <div className="flex flex-col items-center w-full min-h-full">
           <div className="mt-8">
-            <img src={`/images/${currentVote?.id}.png`} />
+            <img
+              src={`/images/${currentVote?.id}.png`}
+              alt={`${currentVote?.name} (${currentVote?.partyName})`}
+            />
           </div>
           <div className="p-4 w-full text-center bg-[rgba(0,0,0,0.5)] grow flex flex-col">
             <p className="font-black my-4 text-[2rem]">{currentVote?.name}</p>
@@ -449,7 +339,7 @@ function App() {
               <a
                 href={currentVote?.reference}
                 target="_blank"
-                className="w-full block border border-solid  border-white p-2 my-4 rounded-lg"
+                className="block w-full p-2 my-4 border border-white border-solid rounded-lg"
               >
                 เปิดแหล่งข้อมูลอ้างอิง
               </a>
@@ -457,7 +347,7 @@ function App() {
 
             <a
               onClick={onClose}
-              className="cursor-pointer w-full block border border-solid  border-white p-2 rounded-lg"
+              className="block w-full p-2 border border-white border-solid rounded-lg cursor-pointer"
             >
               ปิด
             </a>
