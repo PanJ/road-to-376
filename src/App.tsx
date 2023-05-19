@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
+import Modal from "react-modal";
 import useSWR from "swr";
 import "./App.css";
 
@@ -111,7 +112,7 @@ function VoteContainer({
       className="flex flex-col flex-wrap content-start gap-2 p-2 vote-container"
       style={{
         background: backgroundStyle,
-        width: `calc(100%*${desktopColumns}/18)`,
+        // width: `calc(100%*${desktopColumns}/18)`,
       }}
     >
       <div className="w-full rounded-md py-4 bg-[rgba(0,0,0,0.5)] text-center">
@@ -175,9 +176,10 @@ function App() {
     [voteData]
   );
 
-  if (isVoteLoading) return null;
+  const [modalOpen, setModalOpen] = useState(false);
 
   // console.log(processedVoteData);
+  if (isVoteLoading) return null;
 
   const yesVoteCount =
     processedVoteData["2"].length + processedVoteData["1"].length;
@@ -274,9 +276,9 @@ function App() {
         <VoteContainer
           title="โหวตเห็นด้วย"
           votes={processedVoteData["2"]}
-          backgroundStyle="linear-gradient(39deg, rgba(6,36,0,1) 0%, rgba(72,119,67,1) 35%, rgba(0,255,87,1) 100%)"
+          backgroundStyle="linear-gradient(39deg, rgb(6, 36, 0) 0%, rgb(72, 119, 67) 35%, rgb(49 173 17) 100%)"
           showOptions={showOption}
-          desktopColumns={7}
+          desktopColumns={6}
         />
         {/* <VoteContainer
           title="มีแนวโน้มโหวตเห็นด้วย"
@@ -288,7 +290,7 @@ function App() {
           votes={processedVoteData["0"]}
           backgroundStyle="linear-gradient(39deg, rgba(46,61,46,1) 0%, rgba(83,79,79,1) 49%, rgba(64,49,49,1) 100%)"
           showOptions={showOption}
-          desktopColumns={7}
+          desktopColumns={6}
         />
         {/* <VoteContainer
           title="มีแนวโน้มไม่โหวตเห็นด้วย"
@@ -300,7 +302,7 @@ function App() {
           votes={processedVoteData["-2"]}
           showOptions={showOption}
           backgroundStyle="linear-gradient(39deg, rgb(71, 62, 59) 0%, rgb(201, 59, 45) 30%, rgb(157 45 10) 100%)"
-          desktopColumns={4}
+          desktopColumns={6}
         />
       </div>
       <p className="mt-4 font-black">
@@ -334,6 +336,27 @@ function App() {
         </a>
       </p>
       <Tooltip id="vote-tooltip" />
+      <Modal
+        isOpen={modalOpen}
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        onAfterOpen={() => {}}
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        onRequestClose={() => {
+          setModalOpen(false);
+        }}
+        shouldCloseOnOverlayClick
+        style={{}}
+        contentLabel="Example Modal"
+      >
+        <div>I am a modal</div>
+        <form>
+          <input />
+          <button>tab navigation</button>
+          <button>stays</button>
+          <button>inside</button>
+          <button>the modal</button>
+        </form>
+      </Modal>
     </>
   );
 }
