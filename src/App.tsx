@@ -94,19 +94,31 @@ type VoteContainerProps = {
   votes: Vote[];
   title: string;
   backgroundStyle: string;
+  desktopColumns: number;
 };
-function VoteContainer({ votes, title, backgroundStyle }: VoteContainerProps) {
+function VoteContainer({
+  votes,
+  title,
+  backgroundStyle,
+  desktopColumns,
+}: VoteContainerProps) {
   return (
     <div
-      className="flex gap-2 flex-col flex-wrap md:w-[33.333%] w-full p-2 content-start"
+      className="vote-container flex gap-2 flex-col flex-wrap p-2 content-start"
       style={{
         background: backgroundStyle,
+        width: `calc(100%*${desktopColumns}/18)`,
       }}
     >
       <div className="w-full rounded-md py-4 bg-[rgba(0,0,0,0.5)] text-center">
         <h3 className="font-black">{title}</h3>
       </div>
-      <div className="grid grid-cols-6 gap-2">
+      <div
+        className="grid grid-cols-6 gap-2"
+        style={{
+          gridTemplateColumns: `repeat(${desktopColumns}, minmax(0, 1fr))`,
+        }}
+      >
         {votes.map((v) => (
           <VoteItem vote={v} />
         ))}
@@ -196,6 +208,7 @@ function App() {
           title="โหวตเห็นด้วย"
           votes={processedVoteData["2"]}
           backgroundStyle="linear-gradient(39deg, rgb(6, 36, 0) 0%, rgb(72, 119, 67) 35%, rgb(49 173 17) 100%)"
+          desktopColumns={7}
         />
         {/* <VoteContainer
           title="มีแนวโน้มโหวตเห็นด้วย"
@@ -206,6 +219,7 @@ function App() {
           title="ยังไม่ทราบ / ไม่ชัดเจน"
           votes={processedVoteData["0"]}
           backgroundStyle="linear-gradient(39deg, rgba(46,61,46,1) 0%, rgba(83,79,79,1) 49%, rgba(64,49,49,1) 100%)"
+          desktopColumns={7}
         />
         {/* <VoteContainer
           title="มีแนวโน้มไม่โหวตเห็นด้วย"
@@ -216,6 +230,7 @@ function App() {
           title="ไม่โหวตเห็นด้วย"
           votes={processedVoteData["-2"]}
           backgroundStyle="linear-gradient(39deg, rgb(71, 62, 59) 0%, rgb(201, 59, 45) 30%, rgb(157 45 10) 100%)"
+          desktopColumns={4}
         />
       </div>
       <p className="font-black mt-4">
