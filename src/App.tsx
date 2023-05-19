@@ -307,6 +307,7 @@ function App() {
             backgroundColor: currentVote?.color || "#777",
             maxWidth: "400px",
             margin: "auto",
+            borderRadius: "20px",
           },
         }}
         isOpen={modalOpen}
