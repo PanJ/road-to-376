@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ChangeEventHandler,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Tooltip } from "react-tooltip";
 import Modal from "react-modal";
 import useSWR from "swr";
@@ -147,6 +154,49 @@ function VoteContainer({
   );
 }
 
+type FilterOptionProps = {
+  isActive: boolean;
+  value: string;
+  onChange: ChangeEventHandler<HTMLInputElement>;
+};
+function FilterOption({
+  isActive,
+  value,
+  onChange,
+  children,
+}: PropsWithChildren<FilterOptionProps>) {
+  return (
+    <>
+      <input
+        type="radio"
+        name="show"
+        id={value}
+        className="hidden"
+        value={value}
+        onChange={(e) => {
+          console.log(e);
+          onChange(e);
+        }}
+      />
+      {isActive ? (
+        <label
+          htmlFor={value}
+          className="px-4 py-2 bg-gray-300 rounded-full hover:cursor-pointer text-black"
+        >
+          {children}
+        </label>
+      ) : (
+        <label
+          htmlFor={value}
+          className="px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer"
+        >
+          {children}
+        </label>
+      )}
+    </>
+  );
+}
+
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
     "/data/vote.csv?v=5",
@@ -157,9 +207,15 @@ function App() {
     "all" | MemberType.Senate | MemberType.Rep
   >("all");
 
-  const onShowOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setShowOption(e.target.value as "all" | MemberType.Senate | MemberType.Rep);
-  };
+  const onShowOptionChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      console.log(e.target.value);
+      setShowOption(
+        e.target.value as "all" | MemberType.Senate | MemberType.Rep
+      );
+    },
+    []
+  );
 
   const processedVoteData = useMemo<{
     [v in VoteType]: Vote[];
@@ -257,54 +313,27 @@ function App() {
 
       <div className="flex flex-row gap-2 my-4 md-4">
         {/* show options */}
-        <input
-          type="radio"
-          name="show"
-          id="all"
-          className="hidden"
+        <FilterOption
+          isActive={showOption === "all"}
           value="all"
           onChange={onShowOptionChange}
-        />
-        <label
-          htmlFor="all"
-          className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
-            showOption === "all" ? "bg-gray-300 text-black" : ""
-          }`}
         >
           ทั้งหมด
-        </label>
-        <input
-          type="radio"
-          name="show"
-          id="senate"
-          className="hidden"
+        </FilterOption>
+        <FilterOption
+          isActive={showOption === MemberType.Senate}
           value={MemberType.Senate}
           onChange={onShowOptionChange}
-        />
-        <label
-          htmlFor="senate"
-          className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
-            showOption === MemberType.Senate ? "bg-gray-300 text-black" : ""
-          }`}
         >
           <span className="max-md:hidden">แสดงเฉพาะ </span>ส.ว.
-        </label>
-        <input
-          type="radio"
-          name="show"
-          id="rep"
-          className="hidden"
+        </FilterOption>
+        <FilterOption
+          isActive={showOption === MemberType.Rep}
           value={MemberType.Rep}
           onChange={onShowOptionChange}
-        />
-        <label
-          htmlFor="rep"
-          className={`px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer ${
-            showOption === MemberType.Rep ? "bg-gray-300 text-black" : ""
-          }`}
         >
           <span className="max-md:hidden">แสดงเฉพาะ </span>ส.ส.
-        </label>
+        </FilterOption>
       </div>
 
       <div className="flex flex-col md-4 md:flex-row">
