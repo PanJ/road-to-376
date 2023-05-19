@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
+import Modal from "react-modal";
 import useSWR from "swr";
 import "./App.css";
 
@@ -107,7 +108,7 @@ function VoteContainer({
       className="vote-container flex gap-2 flex-col flex-wrap p-2 content-start"
       style={{
         background: backgroundStyle,
-        width: `calc(100%*${desktopColumns}/18)`,
+        // width: `calc(100%*${desktopColumns}/18)`,
       }}
     >
       <div className="w-full rounded-md py-4 bg-[rgba(0,0,0,0.5)] text-center">
@@ -161,9 +162,9 @@ function App() {
     [voteData]
   );
 
-  if (isVoteLoading) return null;
+  const [modalOpen, setModalOpen] = useState(false);
 
-  console.log(processedVoteData);
+  if (isVoteLoading) return null;
 
   const yesVoteCount =
     processedVoteData["2"].length + processedVoteData["1"].length;
@@ -208,7 +209,7 @@ function App() {
           title="โหวตเห็นด้วย"
           votes={processedVoteData["2"]}
           backgroundStyle="linear-gradient(39deg, rgb(6, 36, 0) 0%, rgb(72, 119, 67) 35%, rgb(49 173 17) 100%)"
-          desktopColumns={7}
+          desktopColumns={6}
         />
         {/* <VoteContainer
           title="มีแนวโน้มโหวตเห็นด้วย"
@@ -219,7 +220,7 @@ function App() {
           title="ยังไม่ทราบ / ไม่ชัดเจน"
           votes={processedVoteData["0"]}
           backgroundStyle="linear-gradient(39deg, rgba(46,61,46,1) 0%, rgba(83,79,79,1) 49%, rgba(64,49,49,1) 100%)"
-          desktopColumns={7}
+          desktopColumns={6}
         />
         {/* <VoteContainer
           title="มีแนวโน้มไม่โหวตเห็นด้วย"
@@ -230,7 +231,7 @@ function App() {
           title="ไม่โหวตเห็นด้วย"
           votes={processedVoteData["-2"]}
           backgroundStyle="linear-gradient(39deg, rgb(71, 62, 59) 0%, rgb(201, 59, 45) 30%, rgb(157 45 10) 100%)"
-          desktopColumns={4}
+          desktopColumns={6}
         />
       </div>
       <p className="font-black mt-4">
@@ -256,6 +257,27 @@ function App() {
         </a>
       </p>
       <Tooltip id="vote-tooltip" />
+      <Modal
+        isOpen={modalOpen}
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        onAfterOpen={() => {}}
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        onRequestClose={() => {
+          setModalOpen(false);
+        }}
+        shouldCloseOnOverlayClick
+        style={{}}
+        contentLabel="Example Modal"
+      >
+        <div>I am a modal</div>
+        <form>
+          <input />
+          <button>tab navigation</button>
+          <button>stays</button>
+          <button>inside</button>
+          <button>the modal</button>
+        </form>
+      </Modal>
     </>
   );
 }
