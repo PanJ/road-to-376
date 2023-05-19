@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import Modal from "react-modal";
 import useSWR from "swr";
@@ -58,8 +58,9 @@ const csvFetcher = (url: string) =>
 type VoteProps = {
   vote: Vote;
   onClickVote: (v: Vote) => void;
+  isActive: boolean;
 };
-function VoteItem({ vote, onClickVote }: VoteProps) {
+function VoteItem({ vote, onClickVote, isActive }: VoteProps) {
   const onClick = useCallback(() => {
     onClickVote(vote);
   }, [onClickVote, vote]);
@@ -74,9 +75,8 @@ function VoteItem({ vote, onClickVote }: VoteProps) {
   }
   return (
     <div
-      // href={vote.reference}
       onClick={onClick}
-      className="cursor-pointer"
+      className={`vote-item cursor-pointer ${isActive ? "active" : ""}`}
       data-tooltip-id="vote-tooltip"
       data-tooltip-html={text}
     >
@@ -101,6 +101,7 @@ type VoteContainerProps = {
   backgroundStyle: string;
   desktopColumns: number;
   onClickVote: (v: Vote) => void;
+  activeId: string;
 };
 function VoteContainer({
   votes,
@@ -108,6 +109,7 @@ function VoteContainer({
   backgroundStyle,
   desktopColumns,
   onClickVote,
+  activeId,
 }: VoteContainerProps) {
   return (
     <div
@@ -127,7 +129,12 @@ function VoteContainer({
         }}
       >
         {votes.map((v) => (
-          <VoteItem key={v.id} vote={v} onClickVote={onClickVote} />
+          <VoteItem
+            key={v.id}
+            vote={v}
+            onClickVote={onClickVote}
+            isActive={activeId === v.id}
+          />
         ))}
       </div>
     </div>
@@ -168,8 +175,23 @@ function App() {
     [voteData]
   );
 
+  const [activeId, setActiveId] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentVote, setCurrentVote] = useState<Vote | undefined>();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log(processedVoteData);
+      const randomIndex = Math.floor(
+        Math.random() * processedVoteData["2"].length
+      );
+      const randomId = processedVoteData["2"][randomIndex].id;
+      console.log(randomIndex, randomId, processedVoteData["2"].length);
+      setActiveId(randomId);
+    }, 300);
+    return () => clearInterval(interval);
+  }, [processedVoteData]);
+
   const onClickVote = useCallback((v: Vote) => {
     console.log(v);
     setCurrentVote(v);
@@ -227,6 +249,7 @@ function App() {
           backgroundStyle="linear-gradient(39deg, rgb(6, 36, 0) 0%, rgb(72, 119, 67) 35%, rgb(49 173 17) 100%)"
           desktopColumns={6}
           onClickVote={onClickVote}
+          activeId={activeId}
         />
         {/* <VoteContainer
           title="มีแนวโน้มโหวตเห็นด้วย"
@@ -239,6 +262,7 @@ function App() {
           backgroundStyle="linear-gradient(39deg, rgba(46,61,46,1) 0%, rgba(83,79,79,1) 49%, rgba(64,49,49,1) 100%)"
           desktopColumns={6}
           onClickVote={onClickVote}
+          activeId={activeId}
         />
         {/* <VoteContainer
           title="มีแนวโน้มไม่โหวตเห็นด้วย"
@@ -251,6 +275,7 @@ function App() {
           backgroundStyle="linear-gradient(39deg, rgb(71, 62, 59) 0%, rgb(201, 59, 45) 30%, rgb(157 45 10) 100%)"
           desktopColumns={6}
           onClickVote={onClickVote}
+          activeId={activeId}
         />
       </div>
       <p className="font-black mt-4">

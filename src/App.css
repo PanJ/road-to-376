@@ -5,6 +5,25 @@
   text-align: center;
 }
 
+@keyframes rotating {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+.vote-item.active, .vote-item:hover {
+  animation: rotating 0.2s linear;
+}
+
+
 @media (max-width: 768px) {
   .vote-container {
       width: 100%;
