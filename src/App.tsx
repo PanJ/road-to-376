@@ -181,19 +181,16 @@ function App() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log(processedVoteData);
       const randomIndex = Math.floor(
         Math.random() * processedVoteData["2"].length
       );
       const randomId = processedVoteData["2"][randomIndex].id;
-      console.log(randomIndex, randomId, processedVoteData["2"].length);
       setActiveId(randomId);
     }, 300);
     return () => clearInterval(interval);
   }, [processedVoteData]);
 
   const onClickVote = useCallback((v: Vote) => {
-    console.log(v);
     setCurrentVote(v);
     setModalOpen(true);
   }, []);
