@@ -200,7 +200,7 @@ function FilterOption({
 
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
-    "/data/vote.csv?v=8",
+    "/data/vote.csv?v=9",
     csvFetcher
   );
 
