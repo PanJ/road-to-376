@@ -86,7 +86,7 @@ function FilterOption({
 
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
-    "/data/vote.csv?v=7",
+    "/data/vote.csv?v=8",
     csvFetcher
   );
 
@@ -335,11 +335,20 @@ function App() {
               </p>
             )}
             <div className="grow"></div>
+            {currentVote?.bio !== "" && (
+              <a
+                href={currentVote?.bio}
+                target="_blank"
+                className="block w-full p-2 my-2 border border-white border-solid rounded-lg"
+              >
+                ดูประวัติ
+              </a>
+            )}
             {currentVote?.reference !== "" && (
               <a
                 href={currentVote?.reference}
                 target="_blank"
-                className="block w-full p-2 my-4 border border-white border-solid rounded-lg"
+                className="block w-full p-2 my-2 border border-white border-solid rounded-lg"
               >
                 เปิดแหล่งข้อมูลอ้างอิง
               </a>
@@ -347,7 +356,7 @@ function App() {
 
             <a
               onClick={onClose}
-              className="block w-full p-2 border border-white border-solid rounded-lg cursor-pointer"
+              className="block w-full p-2 my-2 border border-white border-solid rounded-lg cursor-pointer"
             >
               ปิด
             </a>

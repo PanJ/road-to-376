@@ -6,6 +6,7 @@ export type Vote = {
   color?: string;
   voteType: VoteType;
   reference: string;
+  bio: string;
 };
 
 export enum MemberType {
