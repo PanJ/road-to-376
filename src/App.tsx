@@ -32,6 +32,7 @@ type Vote = {
   color?: string;
   voteType: VoteType;
   reference: string;
+  bio: string;
 };
 
 const csvFetcher = (url: string) =>
@@ -199,7 +200,7 @@ function FilterOption({
 
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
-    "/data/vote.csv?v=7",
+    "/data/vote.csv?v=8",
     csvFetcher
   );
 
@@ -445,11 +446,20 @@ function App() {
               </p>
             )}
             <div className="grow"></div>
+            {currentVote?.bio !== "" && (
+              <a
+                href={currentVote?.bio}
+                target="_blank"
+                className="w-full block border border-solid  border-white p-2 my-2 rounded-lg"
+              >
+                ดูประวัติ
+              </a>
+            )}
             {currentVote?.reference !== "" && (
               <a
                 href={currentVote?.reference}
                 target="_blank"
-                className="w-full block border border-solid  border-white p-2 my-4 rounded-lg"
+                className="w-full block border border-solid  border-white p-2 my-2 rounded-lg"
               >
                 เปิดแหล่งข้อมูลอ้างอิง
               </a>
@@ -457,7 +467,7 @@ function App() {
 
             <a
               onClick={onClose}
-              className="cursor-pointer w-full block border border-solid  border-white p-2 rounded-lg"
+              className="cursor-pointer w-full block border border-solid my-2 border-white p-2 rounded-lg"
             >
               ปิด
             </a>
