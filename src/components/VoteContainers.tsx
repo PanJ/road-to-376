@@ -10,6 +10,7 @@ export type VoteContainerProps = {
   onClickVote: (v: Vote) => void;
   activeId: string;
 };
+
 export function VoteContainer({
   votes,
   title,

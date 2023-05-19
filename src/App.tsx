@@ -1,17 +1,11 @@
-import {
-  ChangeEventHandler,
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import Modal from "react-modal";
 import useSWR from "swr";
 import "./App.css";
 import { VoteContainer } from "./components/VoteContainers";
 import { Vote, MemberType, VoteType } from "./types";
+import { FilterOption } from "./components/FilterOption";
 
 const csvFetcher = (url: string) =>
   fetch(url)
@@ -41,49 +35,6 @@ const csvFetcher = (url: string) =>
           ).data
     );
 
-type FilterOptionProps = {
-  isActive: boolean;
-  value: string;
-  onChange: ChangeEventHandler<HTMLInputElement>;
-};
-function FilterOption({
-  isActive,
-  value,
-  onChange,
-  children,
-}: PropsWithChildren<FilterOptionProps>) {
-  return (
-    <>
-      <input
-        type="radio"
-        name="show"
-        id={value}
-        className="hidden"
-        value={value}
-        onChange={(e) => {
-          console.log(e);
-          onChange(e);
-        }}
-      />
-      {isActive ? (
-        <label
-          htmlFor={value}
-          className="px-4 py-2 text-black bg-gray-300 rounded-full hover:cursor-pointer"
-        >
-          {children}
-        </label>
-      ) : (
-        <label
-          htmlFor={value}
-          className="px-4 py-2 bg-gray-600 rounded-full hover:cursor-pointer"
-        >
-          {children}
-        </label>
-      )}
-    </>
-  );
-}
-
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
     "/data/vote.csv?v=8",
@@ -96,7 +47,6 @@ function App() {
 
   const onShowOptionChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      console.log(e.target.value);
       setShowOption(
         e.target.value as "all" | MemberType.Senate | MemberType.Rep
       );
