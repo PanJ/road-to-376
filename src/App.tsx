@@ -37,7 +37,7 @@ const csvFetcher = (url: string) =>
 
 function App() {
   const { data: voteData, isLoading: isVoteLoading } = useSWR<Vote[]>(
-    "/data/vote.csv?v=13",
+    "/data/vote.csv?v=14",
     csvFetcher
   );
 
